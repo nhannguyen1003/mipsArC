@@ -30,7 +30,7 @@
 	la %r,arr
 	lhu %r,%pos(%r)	
 .end_macro
-.macro print_board()
+.macro print_board() # lam thay doi $v0, a0
 	print_str "<---R    5     4     3     2     1    L--->\n _________________________________________\n"
 	print_str "|     |  " 
 	print_int1(22)
@@ -74,7 +74,7 @@
 	
 .end_macro
 .data
-	arr: .half 0,1,2,3,4,5,0,0,8,9,10,11
+	arr: .half 0,1,2,3,4,5,0,0,8,9,10,11,10,10
 .text
 	li $s1,0 # diem nguoi choi 1
 	li $s2,0 # diem nguoi choi 

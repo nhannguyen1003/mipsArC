@@ -12,7 +12,7 @@ char strnAnB[]="\n|     |_____|_____|_____|_____|_____|     |\n";
 char space1[]=" |  ";
 char space2[]="  |  ";
 char spac3[]="   |  ";
-int a[]={0,0,5,0,5,1,0,0,5,0,5,0,10,10};
+int a[]={0,1,2,3,4,5,0,0,8,9,10,11,10,10};
 void print(int* a, int scores1,int scores2){
     cout<<"<---R    5     4     3     2     1    L--->\n";
     cout<<str5;
@@ -68,8 +68,10 @@ int calculateArray(int* a,int _pos,int isRight){
         }
         int current=0;
         while (current==0){
-            pos=(pos+1)%12;
+            pos++;
+            if (pos==12) pos=0;
             int temp=a[pos];
+            a[pos]=0;
             if (pos==0) {
                 temp+=a[12];
                 a[12]=0;
@@ -80,8 +82,9 @@ int calculateArray(int* a,int _pos,int isRight){
             }
             if (temp==0) break;
             scores+=temp;
-            a[pos]=0;
-            pos=(pos+1)%12;
+            pos++;
+            if (pos==12) pos=0;
+
             current=a[pos];
             if (pos==0){
                 current+=a[12];
@@ -98,9 +101,12 @@ int calculateArray(int* a,int _pos,int isRight){
             // không còn quân để phát
             if (temp==0){
                 // nếu đó là ô quan
-                if (pos==0 || pos==6) {
-                    // ô quan có quân thì mất lượt
-                    if (a[pos]+a[pos+12]!=0) return 0;
+                if (pos==0){
+                    if (a[0]+a[12]!=0) return 0;
+
+                }
+                if (pos==6){
+                    if (a[6]+a[13]!=0) return 0;
                 }
                 if (a[pos]==0) break;
                 temp+=a[pos];
@@ -112,7 +118,8 @@ int calculateArray(int* a,int _pos,int isRight){
         }
         int current=0;
         while (current==0){
-            pos=(pos+11)%12;
+            pos--;
+            if (pos==-1) pos=11;
             int temp=a[pos];
             if (pos==0) {
                 temp+=a[12];
@@ -125,7 +132,8 @@ int calculateArray(int* a,int _pos,int isRight){
             if (temp==0) break;
             scores+=temp;
             a[pos]=0;
-            pos=(pos+11)%12;
+            pos--;
+            if (pos==-1) pos=11;
             current=a[pos];
             if (pos==0){
                 current+=a[12];
@@ -210,17 +218,17 @@ int main() {
 
     return 0;
 }
-<---R    5     4     3     2     1    L--->
-_________________________________________
-|     |     |  5  |     |  5  |     |     |   scores 2: 0
-|  A  |_____|_____|_____|_____|_____|  B  |
-|     |     |  5  |     |  5  |  1  |     |   scores 1: 0
-|_____|_____|_____|_____|_____|_____|_____|
-<---L    1     2     3     4     5    R--->
-//
-//     ----* Luot cua nguoi choi 1 *----
-//     -> chon o:
-//     -> chon huong:
-int foo(int pos){
-  return a[pos]
-};
+//<---R    5     4     3     2     1    L--->
+//_________________________________________
+//|     |     |  5  |     |  5  |     |     |   scores 2: 0
+//|  A  |_____|_____|_____|_____|_____|  B  |
+//|     |     |  5  |     |  5  |  1  |     |   scores 1: 0
+//|_____|_____|_____|_____|_____|_____|_____|
+//<---L    1     2     3     4     5    R--->
+////
+////     ----* Luot cua nguoi choi 1 *----
+////     -> chon o:
+////     -> chon huong:
+//int foo(int pos){
+//  return a[pos]
+//};
