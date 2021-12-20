@@ -13,6 +13,7 @@ char space1[]=" |  ";
 char space2[]="  |  ";
 char spac3[]="   |  ";
 int a[]={0,1,2,3,4,5,0,0,8,9,10,11,10,10};
+int  mode;
 void print(int* a, int scores1,int scores2){
     cout<<"<---R    5     4     3     2     1    L--->\n";
     cout<<str5;
@@ -168,6 +169,7 @@ int endGame(int* a,int& scores1,int& scores2){
     return -1;
 }
 void control(){
+
     int scores1=0;
     int scores2=0;
     print(a,scores1,scores2);
@@ -176,35 +178,49 @@ void control(){
         int pos;
         cout<<"\n     ----* Luot cua nguoi choi 1 *----\n";
         do {
-            cout<<"     -> chon o: ";
+            cout<<"     -> chon cac o tu 1-5 : ";
             cin>>pos;
         } while (!(pos>0 && pos<6 && a[pos]!=0));
 
         int direct;
         do {
-            cout<<"     -> chon huong: "; cin>>direct;
-            cout<<endl;
+            cout<<"     -> chon 0 de sang trai, 1 de sang phai : "; cin>>direct;
         } while (direct!=0 && direct!=1);
         scores1+= calculateArray(a,pos,direct);
         print(a,scores1,scores2);
         result=endGame(a,scores1,scores2);
         if (result!=-1) break;
+        if (mode==2) {
+            cout << "\n     ----* Luot cua nguoi choi 2 *----\n";
+            do {
+                cout << "     --> chon cac o tu 1-5 : ";
+                cin >> pos;
+                pos += 6;
+            } while (!(pos > 6 && pos < 12 && a[pos] != 0));
 
-        cout<<"\n     ----* Luot cua nguoi choi 2 *----\n";
-        do {
-            cout<<"     -> chon o: ";
-            cin>>pos;
-            pos+=6;
-        } while (!(pos>6 && pos<12 && a[pos]!=0));
+            do {
+                cout << "     --> chon 0 de sang trai, 1 de sang phai : ";
+                cin >> direct;
+            } while (direct != 0 && direct != 1);
+        }
+        else {
+            cout << "\n     ----* Luot cua nguoi choi 2(AI) *----\n";
+            do {
+               //pos=random 7-11
+            } while (!(pos > 6 && pos < 12 && a[pos] != 0));
 
-        do {
-            cout<<"     -> chon huong: "; cin>>direct;
-            cout<<endl;
-        } while (direct!=0 && direct!=1);
+            do {
+                //direct =0/1
+            } while (direct != 0 && direct != 1);
+            cout<<"     --> May chon o "<<pos<<endl;
+            cout<<"     --> May chon huong : "<< direct<<endl;
+
+        }
+
         scores2+= calculateArray(a,pos,direct);
+        print(a,scores1,scores2);
         result=endGame(a,scores1,scores2);
         if (result!=-1) break;
-        print(a,scores1,scores2);
     }
     cout<<"\nTro choi ket thuc!!!\n";
     cout<<"Diem nguoi choi 1: "<<scores1<<endl;

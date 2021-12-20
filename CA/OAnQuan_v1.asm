@@ -26,6 +26,12 @@
 	la $a0, myLabel
 	syscall
 .end_macro
+.macro read_int(%r) # lam thay doi v0
+	.text
+	li $v0, 5
+	syscall
+	move %r,$v0
+.end_macro
 .macro assign(%r,%pos)
 	la %r,arr
 	lhu %r,%pos(%r)	
@@ -78,7 +84,5 @@
 .text
 	li $s1,0 # diem nguoi choi 1
 	li $s2,0 # diem nguoi choi 
-	li $s3,10 # ong dia trai
-	li $s4,10 # ong dia phai
-	print_board
 	
+	read_int $a1
