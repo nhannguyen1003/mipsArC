@@ -84,7 +84,7 @@
 	
 .end_macro
 .data
-	arr: .half 0,0,0,1,0,0,0,0,0,0,0,0,0,10
+	arr: .half 0,5,5,5,5,5,0,5,5,5,5,5,10,10
 .text
 main:
 	print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
