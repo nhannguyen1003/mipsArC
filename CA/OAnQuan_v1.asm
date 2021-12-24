@@ -155,7 +155,7 @@
 	
 .end_macro
 .data
-	arr: .half 0,5,5,5,5,5,0,5,5,5,5,5,10,10
+	arr: .half 1,1,0,0,1,0,2,0,2,2,0,0,0,0
 .text
 main:
 	print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
@@ -279,14 +279,14 @@ calculateArray:
         				assign($t0,0)
         				assign($t1,24)
         				add $t0,$t0,$t1
-        				bnez $t0,end_calculateArray
+        				bnez $t0,end_calculateArray_if1
         			calculateArray_if4:
         			
         			bne $a3,6,calculateArray_if5 # if ($a3==0)
         				assign($t0,12)
         				assign($t1,26)
         				add $t0,$t0,$t1
-        				bnez $t0,end_calculateArray
+        				bnez $t0,end_calculateArray_if1
         			calculateArray_if5:
         			sll $t1,$a3,1
         			add $t1,$a0,$t1
@@ -360,14 +360,14 @@ calculateArray:
         				assign($t0,0)
         				assign($t1,24)
         				add $t0,$t0,$t1
-        				bnez $t0,end_calculateArray
+        				bnez $t0,end_calculateArray_if1
         			calculateArray_if14:
         			
         			bne $a3,6,calculateArray_if15 # if ($a3==0)
         				assign($t0,12)
         				assign($t1,26)
         				add $t0,$t0,$t1
-        				bnez $t0,end_calculateArray
+        				bnez $t0,end_calculateArray_if1
         			calculateArray_if15:
         			sll $t1,$a3,1
         			add $t1,$a0,$t1
