@@ -175,7 +175,7 @@ int miniMax(int* a,int scores1,int scores2,int depth,bool isMax,int& pos,int& is
     //  if (endGame(a,scores1,scores2)!=-1) return scores2-scores1;
     if (depth==0) return scores2-scores1;
     if (isMax){
-        int Max=-10000;
+        int Max=-500;
         for (int i=7;i<12;i++){
             if (a[i]!=0){
                 int _a[14];
@@ -204,7 +204,7 @@ int miniMax(int* a,int scores1,int scores2,int depth,bool isMax,int& pos,int& is
         return Max;
     }
     else {
-        int Min=10000;
+        int Min=500;
         for (int i=1;i<6;i++){
             if (a[i]!=0){
                 int _a[14];
@@ -297,9 +297,9 @@ void control(){
     else cout<<"Hoa roi!! ^_^";
 }
 int main() {
-    control();
-
-
+    int x,y;
+    cout<<miniMax(a,0,0,3,1,x,y)<<endl;
+    cout<<x<<" "<<y<<endl;
     return 0;
 }
 //<---R    5     4     3     2     1    L--->

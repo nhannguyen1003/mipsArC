@@ -83,17 +83,324 @@
 	print_str "\n|_____|_____|_____|_____|_____|_____|_____|\n<---L    1     2     3     4     5    R--->"
 	
 .end_macro
+.macro storeArr # -28
+	assign($t9,0)
+	sh $t9,0($sp)
+	assign($t9,2)
+	sh $t9,2($sp)
+	assign($t9,4)
+	sh $t9,4($sp)
+	assign($t9,6)
+	sh $t9,6($sp)
+	assign($t9,8)
+	sh $t9,8($sp)
+	assign($t9,10)
+	sh $t9,10($sp)
+	assign($t9,12)
+	sh $t9,12($sp)
+	assign($t9,14)
+	sh $t9,14($sp)
+	assign($t9,16)
+	sh $t9,16($sp)
+	assign($t9,18)
+	sh $t9,18($sp)
+	assign($t9,20)
+	sh $t9,20($sp)
+	assign($t9,22)
+	sh $t9,22($sp)
+	assign($t9,24)
+	sh $t9,24($sp)
+	assign($t9,26)
+	sh $t9,26($sp)
+.end_macro
+.macro loadArr
+	la $t8,arr
+	lhu $t9,0($sp)
+	sh $t9,0($t8)
+	lhu $t9,2($sp)
+	sh $t9,2($t8)
+	lhu $t9,4($sp)
+	sh $t9,4($t8)
+	lhu $t9,6($sp)
+	sh $t9,6($t8)
+	lhu $t9,8($sp)
+	sh $t9,8($t8)
+	lhu $t9,10($sp)
+	sh $t9,10($t8)
+	lhu $t9,12($sp)
+	sh $t9,12($t8)
+	lhu $t9,14($sp)
+	sh $t9,14($t8)
+	lhu $t9,16($sp)
+	sh $t9,16($t8)
+	lhu $t9,18($sp)
+	sh $t9,18($t8)
+	lhu $t9,20($sp)
+	sh $t9,20($t8)
+	lhu $t9,22($sp)
+	sh $t9,22($t8)
+	lhu $t9,24($sp)
+	sh $t9,24($t8)
+	lhu $t9,26($sp)
+	sh $t9,26($t8)
+.end_macro
 .data
-	arr: .half 0,5,5,5,5,5,0,5,5,5,5,5,10,10
+	arr: .half 0,5,5,5,0,5,0,5,5,5,5,5,10,10
 .text
 main:
-	print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
-	read_int $s0 # mode
-	jal control
-	
+	#print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
+	#read_int $s0 # mode
+	#jal control
+	li $a3,1
+	li $a0,3
+	jal miniMax
 
 	j end_program
+# arr,s1,s2,a0-deepth,a1-pos,a2-isRight,a3-isMax
+miniMax:
+	add $sp,$sp,-4
+	sw $ra,0($sp)
+	jal endGame 
+	lw $ra,0($sp)
+	add $sp,$sp,4
+	beq $v0,1,miniMax_if1
+	j end_miniMax_if1
+	miniMax_if1:
+		li $v0,-100
+		jr $ra
+	end_miniMax_if1:
+	beq $v0,2,miniMax_if2
+	j end_miniMax_if2
+	miniMax_if2:
+		li $v0,100
+		jr $ra
+	end_miniMax_if2:
+	beq $v0,$0,miniMax_if3
+	j end_miniMax_if3
+	miniMax_if3:,
+		jr $ra
+	end_miniMax_if3:
+	beq $a0,$0,miniMax_if4
+	j end_miniMax_if4
+	miniMax_if4:
+		sub $v0,$s2,$s1
+		jr $ra
+	end_miniMax_if4:
 	
+	beqz $a3,miniMax_if5 
+		li $t3,7
+		li $s3,-500
+		miniMax_loop1:
+			sll $t4,$t3,1
+			la $t5,arr
+			add $t5,$t5,$t4
+			lhu $t4,0($t5)
+			beqz $t4,miniMax_continue1
+				add $sp,$sp,-28
+				storeArr
+				add $sp,$sp,-32
+				sw $a0,0($sp)
+				sw $a1,4($sp)
+				sw $a2,8($sp)
+				sw $a3,12($sp)
+				sw $t3,16($sp)
+				sw $s3,20($sp)
+				sw $s1,24($sp)
+				sw $s2,28($sp)
+				
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				move $a1,$t3
+				li $a2,1
+				jal calculateArray 
+				lw $ra,0($sp)
+				add $sp,$sp,4
+
+				lw $a0,0($sp)
+				addi $a0,$a0,-1
+				li $a3,0
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				jal miniMax
+				lw $ra,0($sp)
+				add $sp,$sp,4
+				
+				lw $a0,0($sp)
+				lw $a1,4($sp)
+				lw $a2,8($sp)
+				lw $a3,12($sp)
+				lw $t3,16($sp)
+				lw $s3,20($sp)
+				lw $s1,24($sp)
+				lw $s2,28($sp)
+				
+				bge $s3,$v0,miniMax_if6
+					move $s3,$v0
+					move $a1,$t3
+					li $a2,1
+				miniMax_if6:
+				add $sp,$sp,32
+				loadArr
+				add $sp,$sp,-32
+				sw $a0,0($sp)
+				sw $a1,4($sp)
+				sw $a2,8($sp)
+				sw $a3,12($sp)
+				sw $t3,16($sp)
+				sw $s3,20($sp)
+				sw $s1,24($sp)
+				sw $s2,28($sp)
+				
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				move $a1,$t3
+				li $a2,0
+				jal calculateArray 
+				lw $ra,0($sp)
+				add $sp,$sp,4
+
+				lw $a0,0($sp)
+				addi $a0,$a0,-1
+				li $a3,0
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				jal miniMax
+				lw $ra,0($sp)
+				add $sp,$sp,4
+				
+				lw $a0,0($sp)
+				lw $a1,4($sp)
+				lw $a2,8($sp)
+				lw $a3,12($sp)
+				lw $t3,16($sp)
+				lw $s3,20($sp)
+				lw $s1,24($sp)
+				lw $s2,28($sp)
+				
+				bge $s3,$v0,miniMax_if7
+					move $s3,$v0
+					move $a1,$t3
+					li $a2,0
+				miniMax_if7:
+				add $sp,$sp,32
+				loadArr
+				add $sp,$sp,28
+			miniMax_continue1:
+			add $t3,$t3,1
+			blt $t3,12,miniMax_loop1
+		end_miniMax_loop1:
+		move $v0,$s3
+		jr $ra
+	j end_miniMax_if5
+	miniMax_if5:
+		li $t3,1
+		li $s3,500
+		miniMax_loop2:
+			sll $t4,$t3,1
+			la $t5,arr
+			add $t5,$t5,$t4
+			lhu $t4,0($t5)
+			beqz $t4,miniMax_continue2
+				add $sp,$sp,-28
+				storeArr
+				add $sp,$sp,-32
+				sw $a0,0($sp)
+				sw $a1,4($sp)
+				sw $a2,8($sp)
+				sw $a3,12($sp)
+				sw $t3,16($sp)
+				sw $s3,20($sp)
+				sw $s1,24($sp)
+				sw $s2,28($sp)
+				
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				move $a1,$t3
+				li $a2,1
+				jal calculateArray 
+				lw $ra,0($sp)
+				add $sp,$sp,4
+
+				lw $a0,0($sp)
+				addi $a0,$a0,-1
+				li $a3,1
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				jal miniMax
+				lw $ra,0($sp)
+				add $sp,$sp,4
+				
+				lw $a0,0($sp)
+				lw $a1,4($sp)
+				lw $a2,8($sp)
+				lw $a3,12($sp)
+				lw $t3,16($sp)
+				lw $s3,20($sp)
+				lw $s1,24($sp)
+				lw $s2,28($sp)
+				
+				bge $s3,$v0,miniMax_if9
+					move $s3,$v0
+					move $a1,$t3
+					li $a2,1
+				miniMax_if9:
+				add $sp,$sp,32
+				loadArr
+				add $sp,$sp,-32
+				sw $a0,0($sp)
+				sw $a1,4($sp)
+				sw $a2,8($sp)
+				sw $a3,12($sp)
+				sw $t3,16($sp)
+				sw $s3,20($sp)
+				sw $s1,24($sp)
+				sw $s2,28($sp)
+				
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				move $a1,$t3
+				li $a2,0
+				jal calculateArray 
+				lw $ra,0($sp)
+				add $sp,$sp,4
+
+				lw $a0,0($sp)
+				addi $a0,$a0,-1
+				li $a3,1
+				add $sp,$sp,-4
+				sw $ra,0($sp)
+				jal miniMax
+				lw $ra,0($sp)
+				add $sp,$sp,4
+				
+				lw $a0,0($sp)
+				lw $a1,4($sp)
+				lw $a2,8($sp)
+				lw $a3,12($sp)
+				lw $t3,16($sp)
+				lw $s3,20($sp)
+				lw $s1,24($sp)
+				lw $s2,28($sp)
+				
+				bge $s3,$v0,miniMax_if8
+					move $s3,$v0
+					move $a1,$t3
+					li $a2,0
+				miniMax_if8:
+				add $sp,$sp,32
+				#loadArr
+				add $sp,$sp,28
+			miniMax_continue2:
+			add $t3,$t3,1
+			blt $t3,6,miniMax_loop2
+		end_miniMax_loop2:
+		move $v0,$s3
+		jr $ra
+	end_miniMax_if5:
+end_miniMax:	
+
+
+
 control:
 	li $s1,0 # diem nguoi choi 1
 	li $s2,0 # diem nguoi choi 
@@ -122,7 +429,6 @@ control:
 		add $sp,$sp,-4
 		sw $ra,0($sp)
 		jal calculateArray
-		add $s1,$s1,$v0
 		print_board
 		jal endGame
 		lw $ra,0($sp)
@@ -157,7 +463,6 @@ control:
 		add $sp,$sp,-4
 		sw $ra,0($sp)
 		jal calculateArray
-		add $s2,$s2,$v0
 		print_board
 		jal endGame
 		lw $ra,0($sp)
@@ -165,15 +470,16 @@ control:
 		bne $v0,-1,end_control_loop1
 		j control_loop1
 	end_control_loop1:
+	move $t0,$v0
 	print_str "\nTro choi ket thuc!!!\nDiem nguoi choi 1: "
 	print_int $s1
 	print_str "\nDiem nguoi choi 2: "
 	print_int $s2
-	bgt $v0,0,control_if2
+	bgt $t0,0,control_if2
 		print_str "\nHoa roi!! ^_^"
 	j end_control_if2
 	control_if2:
-	bne $v0,1,control_else_if2
+	bne $t0,1,control_else_if2
 		print_str "\nNguoi choi 1 thang!!"
 	j end_control_if2
 	control_else_if2:
@@ -359,51 +665,55 @@ calculateArray:
         	end_calculateArray_loop4:
         end_calculateArray_if1:
         bgt $a1,6,calculateArray_if22
-        	li $t0,0
-        	assign($t1,2)
-        	add $t0,$t0,$t1
-        	assign($t1,4)
-        	add $t0,$t0,$t1
-        	assign($t1,6)
-        	add $t0,$t0,$t1
-        	assign($t1,8)
-        	add $t0,$t0,$t1
-        	assign($t1,10)
-        	add $t0,$t0,$t1
-        	bnez $t0,end_calculateArray_if22
-        		li $t1,1
-        		sh $t1,2($a0)
-        		sh $t1,4($a0)
-        		sh $t1,6($a0)
-        		sh $t1,8($a0)
-        		sh $t1,10($a0)        		
-        		add $v0,$v0,-5
-        j end_calculateArray_if22
+        	add $s1,$s1,$v0
+         j end_calculateArray_if22
         calculateArray_if22:
-     		li $t0,0
-        	assign($t1,14)
-        	add $t0,$t0,$t1
-        	assign($t1,16)
-        	add $t0,$t0,$t1
-        	assign($t1,18)
-        	add $t0,$t0,$t1
-        	assign($t1,20)
-        	add $t0,$t0,$t1
-        	assign($t1,22)
-        	add $t0,$t0,$t1
-        	bnez $t0,end_calculateArray_if22
-        		li $t1,1
-        		sh $t1,14($a0)
-        		sh $t1,16($a0)
-        		sh $t1,18($a0)
-        		sh $t1,20($a0)
-        		sh $t1,22($a0)        		
-        		add $v0,$v0,-5
-     	end_calculateArray_if22:
-        
+        	add $s2,$s2,$v0
+        end_calculateArray_if22:
+        li $t0,0
+        assign($t1,2)
+        add $t0,$t0,$t1
+        assign($t1,4)
+        add $t0,$t0,$t1
+        assign($t1,6)
+        add $t0,$t0,$t1
+        assign($t1,8)
+        add $t0,$t0,$t1
+        assign($t1,10)
+        add $t0,$t0,$t1
+        bnez $t0,calculateArray_if23
+        	li $t1,1
+        	sh $t1,2($a0)
+        	sh $t1,4($a0)
+        	sh $t1,6($a0)
+        	sh $t1,8($a0)
+        	sh $t1,10($a0)        		
+        	add $v0,$v0,-5
+        calculateArray_if23:	
+     	li $t0,0
+       	assign($t1,14)
+       	add $t0,$t0,$t1
+       	assign($t1,16)
+       	add $t0,$t0,$t1
+       	assign($t1,18)
+       	add $t0,$t0,$t1
+       	assign($t1,20)
+       	add $t0,$t0,$t1
+       	assign($t1,22)
+       	add $t0,$t0,$t1
+       	bnez $t0,calculateArray_if24
+       		li $t1,1
+       		sh $t1,14($a0)
+        	sh $t1,16($a0)
+        	sh $t1,18($a0)
+       		sh $t1,20($a0)
+       		sh $t1,22($a0)        		
+       		add $v0,$v0,-5
+   	calculateArray_if24:    
 end_calculateArray:
 jr $ra
-endGame: # lam thay doi t8,t9,v0
+
+endGame:
 	add $sp,$sp,-8
 	sw $t0,0($sp)
 	sw $t1,4($sp)
