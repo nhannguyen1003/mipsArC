@@ -155,7 +155,7 @@
 	
 .end_macro
 .data
-	arr: .half 1,1,0,0,1,0,2,0,2,2,0,0,0,0
+	arr: .half 0,5,5,5,5,5,0,5,5,5,5,5,10,10
 .text
 main:
 	print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
@@ -176,7 +176,7 @@ control:
 		control_loop2:
 			print_str "     -> chon cac o tu 1-5 : "
 			read_int($a1)
-			blt $a1,$0,control_loop2
+			blt $a1,1,control_loop2
 			bgt $a1,5,control_loop2
 			sll $t1,$a1,1
 			la $t0,arr
@@ -222,8 +222,42 @@ control:
 			end_control_loop5:
 			j end_control_if1	
 		control_if1:
-			print_str "do nothing"
-			jr $ra
+			print_str "\n     ----* Luot cua nguoi choi 2(AI) *----\n"
+			li $v0,30
+				syscall
+				move $a1,$a0
+				li $v0,40
+				syscall
+			control_loop6:
+				li $v0,41
+				syscall
+				li $t0,5
+				divu $a0,$t0
+				mfhi $a1
+				addi $a1,$a1,7
+				sll $t1,$a1,1
+				la $t0,arr
+				add $t1,$t0,$t1
+				lhu $t0,0($t1)
+				beqz $t0,control_loop6
+			end_control_loop6:
+			print_str "     -> May chon o so : "
+			move $t1,$a1
+			addi $a1,$a1,-6
+			print_int $a1
+			control_loop7:
+				li $v0,41
+				syscall
+				li $t0,2
+				divu $a0,$t0
+				mfhi $a2
+				beqz $a2,end_control_loop7
+				beq $a2,1,end_control_loop7
+				j control_loop7
+			end_control_loop7:
+			print_str "\n     -> May chon huong : "
+			print_int $a2
+			move $a1,$t1
 		end_control_if1:
 		add $sp,$sp,-4
 		sw $ra,0($sp)
@@ -453,7 +487,7 @@ calculateArray:
         	sh $t1,6($a0)
         	sh $t1,8($a0)
         	sh $t1,10($a0)        		
-        	add $v0,$v0,-5
+        	add $s1,$s1,-5
         calculateArray_if23:	
      	li $t0,0
        	assign($t1,14)
@@ -473,7 +507,7 @@ calculateArray:
         	sh $t1,18($a0)
        		sh $t1,20($a0)
        		sh $t1,22($a0)        		
-       		add $v0,$v0,-5
+       		add $s2,$s2,-5
    	calculateArray_if24:    
 end_calculateArray:
 jr $ra
