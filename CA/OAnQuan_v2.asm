@@ -255,15 +255,21 @@
 	.text
 	li %s1,0
 	li %s2,0
-	li %mode,2
 	la %arr,arr1
+	print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
+	read_int %mode # mode
+	bne %mode,1,continue
+		print_str  "Chon do kho: \n1. De.\n2. Trung Binh.\n3. Kho\n"
+		read_int $a3
+	continue:
+	print_str "                TRO CHOI BAT DAU\n"
 	print_board(%arr,%s1,%s2,$t0,$t1)
 	loop1:
 		print_str "\n     ----* Luot cua nguoi choi 1 *----\n"
 		loop1.1:
 			print_str "    --> chon cac o tu 1-5 : "
 			read_int %pos
-			blt %pos,$0,loop1.1
+			blt %pos,1,loop1.1
 			bgt %pos,5,loop1.1
 			sll %pos,%pos,1
 			assign($t0,%arr,%pos)
@@ -281,8 +287,6 @@
 		bnez %direct,if1
 			li %direct,22
 		if1:
-		print_int %pos
-		print_int %direct
 		calculateArray(%arr,%s1,%s2,%pos,%direct,$t0,$t1,$t2,$t3,$t4,$t5)
 		print_board(%arr,%s1,%s2,$t0,$t1)
 		endGame(%result,%arr,%s1,%s2,$t0,$t1)
@@ -293,7 +297,7 @@
 		loop1.3:
 			print_str "    --> chon cac o tu 1-5 : "
 			read_int %pos
-			blt %pos,$0,loop1.3
+			blt %pos,1,loop1.3
 			bgt %pos,5,loop1.3
 			sll %pos,%pos,1
 			add %pos,%pos,12
@@ -322,6 +326,22 @@
 		j end_if2
 		else2:
 		
+		print_str "     ----* Luot cua nguoi choi 2(May) *----\n"
+		li $s6,1
+		jal miniMax
+		print_str "\n     --> chon cac o tu 1-5 : "
+		srl $t0,$s4,1
+		addi $t0,$t0,-6
+		print_int $t0
+		print_str "\n     --> chon 0 de sang trai, 1 de sang phai : "
+		slti $t0,$s5,3
+		print_int $t0	
+		
+		calculateArray(%arr,%s1,%s2,$s4,$s5,$t0,$t1,$t2,$t3,$t4,$t5)
+		print_board(%arr,%s1,%s2,$t0,$t1)
+		endGame(%result,%arr,%s1,%s2,$t0,$t1)
+		bne %result,-2,end_loop1
+		
 		end_if2:
 		j loop1	
 	end_loop1:
@@ -341,12 +361,238 @@
 	end_control_if2:
 .end_macro
 
+.macro store1(%arr,%s1,%s2,%deepth) #40
+	lhu $t0,0(%arr)
+	sh $t0,0($sp)
+	lhu $t0,2(%arr)
+	sh $t0,2($sp)
+	lhu $t0,4(%arr)
+	sh $t0,4($sp)
+	lhu $t0,6(%arr)
+	sh $t0,6($sp)
+	lhu $t0,8(%arr)
+	sh $t0,8($sp)
+	lhu $t0,10(%arr)
+	sh $t0,10($sp)
+	lhu $t0,12(%arr)
+	sh $t0,12($sp)
+	lhu $t0,14(%arr)
+	sh $t0,14($sp)
+	lhu $t0,16(%arr)
+	sh $t0,16($sp)
+	lhu $t0,18(%arr)
+	sh $t0,18($sp)
+	lhu $t0,20(%arr)
+	sh $t0,20($sp)
+	lhu $t0,22(%arr)
+	sh $t0,22($sp)
+	sw %arr,24($sp)
+	sw %s1,28($sp)
+	sw %s2,32($sp)
+	sw %deepth,36($sp)
+.end_macro
+.macro load1(%arr,%s1,%s2,%deepth) #40
+	lw %arr,24($sp)
+	
+	lhu $t0,0($sp)
+	sh $t0,0(%arr)
+	lhu $t0,2($sp)
+	sh $t0,2(%arr)
+	lhu $t0,4($sp)
+	sh $t0,4(%arr)
+	lhu $t0,6($sp)
+	sh $t0,6(%arr)
+	lhu $t0,8($sp)
+	sh $t0,8(%arr)
+	lhu $t0,10($sp)
+	sh $t0,10(%arr)
+	lhu $t0,12($sp)
+	sh $t0,12(%arr)
+	lhu $t0,14($sp)
+	sh $t0,14(%arr)
+	lhu $t0,16($sp)
+	sh $t0,16(%arr)
+	lhu $t0,18($sp)
+	sh $t0,18(%arr)
+	lhu $t0,20($sp)
+	sh $t0,20(%arr)
+	lhu $t0,22($sp)
+	sh $t0,22(%arr)
+	
+	lw %s1,28($sp)
+	lw %s2,32($sp)
+	lw %deepth,36($sp)
+.end_macro
+.macro store2(%pos,%M,%index,%delta)
+	sw %pos,0($sp)
+	sw %M,4($sp)
+	sw %index,8($sp)
+	sw %delta,12($sp)
+.end_macro
+.macro load2(%pos,%M,%index,%delta)
+	lw %pos,0($sp)
+	lw %M,4($sp)
+	lw %index,8($sp)
+	lw %delta,12($sp)
+.end_macro
+.macro print(%d,%y)
+
+		print_str "\nres :"
+		print_int %y
+	if:
+.end_macro
+
+.data 
+		arr2: .half 10,5,5,5,5,5,10,5,5,5,5,5,10,10
 .text
 main:
 	#print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
 	#read_int $s0 # mode
 	#jal control
+	li $s0,1
 	control($a1,$s1,$s2,$s0,$t7,$t8,$t9)
-
 	j end_program
+miniMax: #$a1=arr,$s1,$s2,$a2=pos,$a3=deepth,$s3=M,s4=index,s5=delta,s6-ismax
+	endGame($v1,$a1,$s1,$s2,$t0,$t1)
+	beq $v1,-2,miniMax_if1
+		sll $v1,$v1,7
+		jr $ra
+	miniMax_if1:
+	
+	bnez $a3,miniMax_if2
+		sub $v1,$s2,$s1
+		jr $ra
+	miniMax_if2:
+
+	add $sp,$sp,-40
+	store1($a1,$s1,$s2,$a3)
+	beqz $s6,miniMax_if5 
+		li $a2,12
+		li $s3,-500
+		miniMax_loop1:
+			addi $a2,$a2,2
+			beq $a2,24,end_miniMax_loop1
+			assign($t0,$a1,$a2)
+			beqz $t0,miniMax_loop1
+			
+			add $sp,$sp,-16
+			store2($a2,$s3,$s4,$s5)
+			calculateArray($a1,$s1,$s2,$a2,2,$t0,$t1,$t2,$t3,$t4,$t5)
+			#print_board($a1,$s1,$s2,$t0,$t1)
+			#print_int $s1
+			#print_str "-"
+			#print_int $s2
+			#print_str "\n"
+			
+			add $sp,$sp,-4
+			sw $ra,0($sp)
+			addi $a3,$a3,-1
+			li $s6,0
+			jal miniMax
+			lw $ra,0($sp)
+			add $sp,$sp,4
+			
+			load2($a2,$s3,$s4,$s5)
+			add $sp,$sp,16
+			
+			bge $s3,$v1,miniMax_if3
+				move $s3,$v1
+				move $s4,$a2
+				li $s5,2
+			miniMax_if3:
+			load1($a1,$s1,$s2,$a3)
+			
+			add $sp,$sp,-16
+			store2($a2,$s3,$s4,$s5)
+			
+			calculateArray($a1,$s1,$s2,$a2,22,$t0,$t1,$t2,$t3,$t4,$t5)
+			
+			add $sp,$sp,-4
+			sw $ra,0($sp)
+			addi $a3,$a3,-1
+			li $s6,0
+			jal miniMax
+			lw $ra,0($sp)
+			add $sp,$sp,4
+			
+			load2($a2,$s3,$s4,$s5)
+			add $sp,$sp,16
+			
+			bge $s3,$v1,miniMax_if4
+				move $s3,$v1
+				move $s4,$a2
+				li $s5,22
+			miniMax_if4:
+			load1($a1,$s1,$s2,$a3)
+
+			j miniMax_loop1
+		end_miniMax_loop1:
+		move $v1,$s3
+		add $sp,$sp,40
+		jr $ra
+	j end_miniMax_if5
+	miniMax_if5:
+		li $a2,0
+		li $s3,500
+		miniMax_loop2:
+			addi $a2,$a2,2
+			beq $a2,12,end_miniMax_loop2
+			assign($t0,$a1,$a2)
+			beqz $t0,miniMax_loop2
+			
+			add $sp,$sp,-16
+			store2($a2,$s3,$s4,$s5)
+			
+			calculateArray($a1,$s1,$s2,$a2,2,$t0,$t1,$t2,$t3,$t4,$t5)
+			
+			add $sp,$sp,-4
+			sw $ra,0($sp)
+			addi $a3,$a3,-1
+			li $s6,1
+			jal miniMax
+			lw $ra,0($sp)
+			add $sp,$sp,4
+			
+			load2($a2,$s3,$s4,$s5)
+			add $sp,$sp,16
+			
+			ble $s3,$v1,miniMax_if6
+				move $s3,$v1
+				move $s4,$a2
+				li $s5,2
+			miniMax_if6:
+			load1($a1,$s1,$s2,$a3)
+			
+			add $sp,$sp,-16
+			store2($a2,$s3,$s4,$s5)
+			
+			calculateArray($a1,$s1,$s2,$a2,22,$t0,$t1,$t2,$t3,$t4,$t5)
+			
+			add $sp,$sp,-4
+			sw $ra,0($sp)
+			addi $a3,$a3,-1
+			li $s6,1
+			jal miniMax
+			lw $ra,0($sp)
+			add $sp,$sp,4
+			
+			load2($a2,$s3,$s4,$s5)
+			add $sp,$sp,16
+			
+			ble $s3,$v1,miniMax_if7
+				move $s3,$v1
+				move $s4,$a2
+				li $s5,22
+			miniMax_if7:
+			load1($a1,$s1,$s2,$a3)
+			
+			j miniMax_loop2
+		end_miniMax_loop2:
+		move $v1,$s3
+		add $sp,$sp,40
+		jr $ra
+	end_miniMax_if5:
+end_miniMax:
+
+		
 end_program:
