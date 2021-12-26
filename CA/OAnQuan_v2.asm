@@ -149,6 +149,7 @@
 		li %result,-1
 	if1:
 .end_macro
+
 .macro calculateArray  (%arr,%s1,%s2,%index,%delta,    %pos,%result,%count,%temp1,%temp2,%temp3) # &arr, &s1, &s2
 	move %pos,%index
 	assign(%count,%arr,%pos)
@@ -249,25 +250,50 @@
 	if6:
 	
 .end_macro
-.macro control(%arr,%s1,%s2,%mode,%pos,%direct,%result,)
+.macro control(%arr,%s1,%s2,%mode,%pos,%direct,%result)
 	.data 
 		arr1: .half 10,5,5,5,5,5,10,5,5,5,5,5,10,10
 	.text
+	li $v0,30
+	syscall
+	move $a1,$a0
+	li $v0,40
+	syscall
 	li %s1,0
 	li %s2,0
 	la %arr,arr1
-	print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
-	read_int %mode # mode
+	loop3:
+		print_str "\n--* Chon che do choi *-- \n1. Choi voi may.\n2. 2 nguoi choi.\n--> "
+		read_int %mode # mode
+		blt %mode,1,loop3
+		bgt %mode,2,loop3
+	end_loop3:
 	bne %mode,1,continue
-		print_str  "Chon do kho: \n1. De.\n2. Trung Binh.\n3. Kho\n"
-		read_int $a3
+		loop2:
+			print_str  "\n--* Chon do kho *-- \n1. De.\n2. Trung Binh.\n3. Kho.\n4. Sieu kho.\n5. Tro lai.\n--> "
+			read_int $t0
+			beq $t0,5,loop3
+			blt $t0,1,loop2
+			bgt $t0,4,loop2
+		end_loop2:
+		li $s7,20
+		li $a3,1
+		beq $t0,1,continue
+		li $s7,8
+		li $a3,3
+		beq $t0,2,continue
+		li $s7,5
+		beq $t0,3,continue
+		li $s7,4
+		li $a3,4
+		beq $t0,1,continue
 	continue:
-	print_str "                TRO CHOI BAT DAU\n"
+	print_str "         ($_$) TRO CHOI BAT DAU (^_^)\n"
 	print_board(%arr,%s1,%s2,$t0,$t1)
 	loop1:
 		print_str "\n     ----* Luot cua nguoi choi 1 *----\n"
 		loop1.1:
-			print_str "    --> chon cac o tu 1-5 : "
+			print_str "     --> Chon cac o tu 1-5: "
 			read_int %pos
 			blt %pos,1,loop1.1
 			bgt %pos,5,loop1.1
@@ -277,7 +303,7 @@
 		end_loop1.1:
 		
 		loop1.2:
-			print_str "    --> chon 0 de sang trai, 1 de sang phai : "
+			print_str "     --> Chon 0 de sang trai, 1 de sang phai: "
 			read_int %direct
 			beqz %direct,end_loop1.2
 			beq %direct,1,end_loop1.2
@@ -295,7 +321,7 @@
 		
 		print_str "\n     ----* Luot cua nguoi choi 2 *----\n"
 		loop1.3:
-			print_str "    --> chon cac o tu 1-5 : "
+			print_str "    --> Chon cac o tu 1-5: "
 			read_int %pos
 			blt %pos,1,loop1.3
 			bgt %pos,5,loop1.3
@@ -307,7 +333,7 @@
 
 		
 		loop1.4:
-			print_str "    --> chon 0 de sang trai, 1 de sang phai : "
+			print_str "    --> Chon 0 de sang trai, 1 de sang phai: "
 			read_int %direct
 			beqz %direct,end_loop1.4
 			beq %direct,1,end_loop1.4
@@ -326,14 +352,46 @@
 		j end_if2
 		else2:
 		
-		print_str "     ----* Luot cua nguoi choi 2(May) *----\n"
-		li $s6,1
-		jal miniMax
-		print_str "\n     --> chon cac o tu 1-5 : "
+		print_str "\n     ----* Luot cua nguoi choi 2(May) *----"
+		
+		li $v0,41
+		syscall
+		divu $a0,$s7
+		mfhi $a0
+		
+		blt $a0,4,else3
+			loop1.5:
+				li $v0,41
+				syscall
+				li $t0,5
+				divu $a0,$t0
+				mfhi $s4
+				addi $s4,$s4,7
+				sll $s4,$s4,1
+				assign($t0,$a1,$s4)
+				beqz $t0,loop1.5
+			end_loop1.5:
+				li $v0,41
+				syscall
+				li $t0,2
+				divu $a0,$t0
+				mfhi $t0
+				li $s5,22
+				beqz $t0,if4
+					li $s5,2
+				if4:
+		j end_if3
+		else3:
+			li $s6,1
+			jal miniMax
+		end_if3:
+		
+		
+		print_str "\n     --> Chon cac o tu 1-5: "
 		srl $t0,$s4,1
 		addi $t0,$t0,-6
 		print_int $t0
-		print_str "\n     --> chon 0 de sang trai, 1 de sang phai : "
+		print_str "\n     --> Chon 0 de sang trai, 1 de sang phai: "
 		slti $t0,$s5,3
 		print_int $t0	
 		
@@ -345,19 +403,19 @@
 		end_if2:
 		j loop1	
 	end_loop1:
-	print_str "\nTro choi ket thuc!!!\nDiem nguoi choi 1: "
+	print_str "\n\nTro choi ket thuc!!! ^(*-*)^ \nDiem nguoi choi 1: "
 	print_int %s1
 	print_str "\nDiem nguoi choi 2: "
 	print_int %s2
-	bgt %result,0,control_if2
-		print_str "\nHoa roi!! ^_^"
+	bgt %result,-1,control_if2
+		print_str "\nNguoi choi 1 thang!! (^-^)b"
 	j end_control_if2
 	control_if2:
-	bne %result,-1,control_else_if2
-		print_str "\nNguoi choi 1 thang!!"
+	bne %result,0,control_else_if2
+		print_str "\nHoa roi!! (=_=)"
 	j end_control_if2
 	control_else_if2:
-		print_str "\nNguoi choi 2 thang!!"
+		print_str "\nNguoi choi 2 thang!! (-_-;)"
 	end_control_if2:
 .end_macro
 
@@ -435,22 +493,10 @@
 	lw %index,8($sp)
 	lw %delta,12($sp)
 .end_macro
-.macro print(%d,%y)
 
-		print_str "\nres :"
-		print_int %y
-	if:
-.end_macro
-
-.data 
-		arr2: .half 10,5,5,5,5,5,10,5,5,5,5,5,10,10
 .text
 main:
-	#print_str "\nChon che do choi bang cach nhan 1 hoac 2: \n1. Choi voi may.\n2. 2 nguoi choi.\n"
-	#read_int $s0 # mode
-	#jal control
-	li $s0,1
-	control($a1,$s1,$s2,$s0,$t7,$t8,$t9)
+		control($a1,$s1,$s2,$s0,$t7,$t8,$t9)
 	j end_program
 miniMax: #$a1=arr,$s1,$s2,$a2=pos,$a3=deepth,$s3=M,s4=index,s5=delta,s6-ismax
 	endGame($v1,$a1,$s1,$s2,$t0,$t1)
@@ -478,11 +524,6 @@ miniMax: #$a1=arr,$s1,$s2,$a2=pos,$a3=deepth,$s3=M,s4=index,s5=delta,s6-ismax
 			add $sp,$sp,-16
 			store2($a2,$s3,$s4,$s5)
 			calculateArray($a1,$s1,$s2,$a2,2,$t0,$t1,$t2,$t3,$t4,$t5)
-			#print_board($a1,$s1,$s2,$t0,$t1)
-			#print_int $s1
-			#print_str "-"
-			#print_int $s2
-			#print_str "\n"
 			
 			add $sp,$sp,-4
 			sw $ra,0($sp)
